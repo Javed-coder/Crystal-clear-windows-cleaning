@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+// can we use mor 
 import emailjs from '@emailjs/browser';
 
 // Initialize EmailJS (replace with your actual public key from EmailJS dashboard)
@@ -14,6 +15,12 @@ export default function Contact() {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const nameRef = useRef(null);
+
+  useEffect(() => {
+    // Example useEffect: focus the name input when the component mounts
+    if (nameRef.current) nameRef.current.focus();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -89,6 +96,7 @@ export default function Contact() {
               type="text" 
               name="name"
               placeholder="Your Name" 
+              ref={nameRef}
               value={formData.name}
               onChange={handleChange}
               required 
