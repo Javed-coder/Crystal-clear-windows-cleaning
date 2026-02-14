@@ -285,6 +285,15 @@ footer {
   nav ul {
     gap: 1rem;
     font-size: 0.9rem;
+    /* allow items to wrap instead of overflowing on very small screens */
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero {
+    padding: 4rem 20px;
+    min-height: 420px;
+    align-items: center;
   }
 
   .hero-content h1 {
