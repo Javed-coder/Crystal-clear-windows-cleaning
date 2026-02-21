@@ -1,9 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
-// can we use mor 
+import { useState,useRef } from 'react';
 import emailjs from '@emailjs/browser';
 
-// Initialize EmailJS (replace with your actual public key from EmailJS dashboard)
-emailjs.init('eLBVjSrb7R2hEBdvB');
+// EmailJS config: prefer Vite env vars. Create a `.env` with these keys:
+// VITE_EMAILJS_USER, VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID
+const EMAILJS_USER = import.meta.env.VITE_EMAILJS_USER || 'eLBVjSrb7R2hEBdvB';
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_mduwx5q';
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_9mfpx8h';
+
+emailjs.init(EMAILJS_USER);
 
 const BUSINESS_EMAIL = 'romal.alimzai07@gmail.com';
 
@@ -17,10 +21,7 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const nameRef = useRef(null);
 
-  useEffect(() => {
-    // Example useEffect: focus the name input when the component mounts
-    if (nameRef.current) nameRef.current.focus();
-  }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,16 +36,26 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
+      // include selected service from Services page (stored in localStorage)
+      let selectedService = null;
+      try {
+        const raw = localStorage.getItem('selectedService');
+        if (raw) selectedService = JSON.parse(raw);
+      } catch (err) {
+        selectedService = null;
+      }
       // Send email to your business email
       await emailjs.send(
-        'service_mduwx5q', // Replace with your EmailJS service ID
-        'template_9mfpx8h', // Replace with your EmailJS template ID
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
         {
           to_email: BUSINESS_EMAIL,
           from_name: formData.name,
           from_email: formData.email,
           phone: formData.phone,
           message: formData.message,
+          selected_service_name: selectedService ? selectedService.title : 'None',
+          selected_service_price: selectedService ? String(selectedService.price) : '',
         }
       );
 
@@ -91,6 +102,8 @@ export default function Contact() {
             </div>
           </div>
 
+          {/* services menu removed from contact page — selection now happens on Services page */}
+
           <form className="contact-form" onSubmit={handleSubmit}>
             <input 
               type="text" 
@@ -123,6 +136,7 @@ export default function Contact() {
               value={formData.message}
               onChange={handleChange}
             ></textarea>
+            {/* selected service shown in email payload; selection made on Services page */}
             <button type="submit" className="btn" disabled={isSubmitting}>
               {isSubmitting ? 'Sending...' : 'Send Message'}
             </button>
