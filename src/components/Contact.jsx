@@ -22,7 +22,6 @@ export default function Contact() {
   const nameRef = useRef(null);
 
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
