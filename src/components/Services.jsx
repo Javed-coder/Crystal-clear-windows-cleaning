@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Contact from './Contact';
 
 export default function Services() {
   const services = [
@@ -63,11 +64,10 @@ export default function Services() {
       // ignore storage errors
     }
   };
-
   return (
     <section className="services" id="services">
       <div className="container">
-        <h2 className="section-title">Our Services</h2>
+        <h2 className="section-title">Please Select a Service</h2>
         <div className="services-grid">
           {services.map((service, index) => (
             <div

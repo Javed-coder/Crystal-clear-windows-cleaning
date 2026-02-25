@@ -76,33 +76,9 @@ export default function Contact() {
   return (
     <section className="contact" id="contact">
       <div className="container">
-        <h2 className="section-title">Get in Touch</h2>
+        <h2 className="section-title">Confirm Service Booking</h2>
         <div className="contact-content">
-          <div className="contact-info">
-            <h3>Contact Information</h3>
-            <div className="contact-item">
-              <strong>📞 Phone</strong>
-              (555) 123-4567
-            </div>
-            <div className="contact-item">
-              <strong>📧 Email</strong>
-              info@crystalclearwindows.com
-            </div>
-            <div className="contact-item">
-              <strong>📍 Address</strong>
-              <div>123 Main Street<br />
-              Your City, ST 12345</div>
-            </div>
-            <div className="contact-item">
-              <strong>🕐 Hours</strong>
-              <div>Monday - Friday: 8:00 AM - 6:00 PM<br />
-              Saturday: 9:00 AM - 4:00 PM<br />
-              Sunday: Closed</div>
-            </div>
-          </div>
-
-          {/* services menu removed from contact page — selection now happens on Services page */}
-
+          
           <form className="contact-form" onSubmit={handleSubmit}>
             <input 
               type="text" 
