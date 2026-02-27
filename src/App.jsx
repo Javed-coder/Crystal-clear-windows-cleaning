@@ -1,11 +1,10 @@
 import './App.css'
-import Navigation from './components/Navigation'
-import Hero from './components/Hero'
-import About from './components/About'
-import Services from './components/Services'
-import Testimonials from './components/Testimonials'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
+import Navigation from './components/layout/Navigation'
+import Hero from './components/sections/Hero'
+import About from './components/sections/About'
+import Testimonials from './components/sections/Testimonials'
+import Contact from './components/sections/Contact'
+import Footer from './components/layout/Footer'
 
 function App() {
   return (
@@ -13,7 +12,6 @@ function App() {
       <Navigation />
       <Hero />
       <About />
-      <Services />
       <Contact />
       <Testimonials />
       <Footer />
