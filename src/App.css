@@ -22,6 +22,18 @@ body {
   line-height: 1.6;
   color: var(--text);
   background: var(--surface);
+  overflow-x: hidden;
+}
+
+#root {
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
 }
 
 /* Navigation */
@@ -589,7 +601,7 @@ nav a:hover {
   }
 
   .nav-menu.open {
-    max-height: 320px;
+    max-height: 420px;
   }
 
   .nav-menu li {
@@ -638,10 +650,17 @@ nav a:hover {
 
   .about-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
   .contact-content {
     grid-template-columns: 1fr;
+  }
+
+  .services-grid,
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .hero-highlights {
@@ -691,6 +710,10 @@ nav a:hover {
     padding: 3rem 12px;
   }
 
+  .services {
+    padding: 3rem 12px;
+  }
+
   .hero {
     padding: 3rem 12px;
     min-height: 360px;
@@ -729,6 +752,18 @@ nav a:hover {
     font-size: 16px;
   }
 
+  .contact-form textarea {
+    min-height: 120px;
+  }
+
+  .service-card .price-overlay {
+    opacity: 1;
+    transform: translateY(0);
+    position: static;
+    display: inline-block;
+    margin-top: 0.65rem;
+  }
+
   .footer-brand,
   .footer-column,
   .footer-bottom {
@@ -737,5 +772,20 @@ nav a:hover {
 
   .footer-brand p {
     margin: 0 auto;
+  }
+}
+
+@media (max-width: 360px) {
+  nav .logo {
+    font-size: 0.95rem;
+    max-width: 72%;
+  }
+
+  .hero-content h1 {
+    font-size: 1.4rem;
+  }
+
+  .btn {
+    max-width: 100%;
   }
 }
