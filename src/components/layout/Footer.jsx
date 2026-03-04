@@ -23,8 +23,8 @@ export default function Footer() {
           <div className="footer-column">
             <h4>Contact</h4>
             <ul>
-              <li><a href="tel:+15551234567">(555) 123-4567</a></li>
-              <li><a href="mailto:romal.alimzai07@gmail.com">romal.alimzai07@gmail.com</a></li>
+              <li><a href="tel:613-600-4850">(613) 600-4850</a></li>
+              <li><a href="mailto:crystalclearwindows077@gmail.com">crystalclearwindows077@gmail.com</a></li>
               <li>Mon-Sat: 8:00 AM - 6:00 PM</li>
             </ul>
           </div>
