@@ -47,37 +47,43 @@ export default function Contact() {
       icon: 'RES',
       title: 'Residential',
       description: 'Professional window cleaning for homes, including interior and exterior surfaces.',
-      price: 49
+      price: 49,
+      isAvailable: true
     },
     {
       icon: 'COM',
       title: 'Commercial',
       description: 'High-rise and building window cleaning services with safety certifications.',
-      price: 149
+      price: 149,
+      isAvailable: false
     },
     {
       icon: 'NEW',
       title: 'Post-Construction',
       description: 'Specialized cleaning services to remove debris and residue from new construction.',
-      price: 199
+      price: 199,
+      isAvailable: false
     },
     {
       icon: 'PWR',
       title: 'Pressure Washing',
       description: 'Pressure washing services for siding, decks, and other exterior surfaces.',
-      price: 89
+      price: 89,
+      isAvailable: false
     },
     {
       icon: 'FIX',
       title: 'Screen Repair',
       description: 'Window screen repair and replacement services to keep bugs out.',
-      price: 39
+      price: 39,
+      isAvailable: false
     },
     {
       icon: 'PLAN',
       title: 'Maintenance Plans',
       description: 'Recurring service plans to keep your windows pristine year-round.',
-      price: 69
+      price: 69,
+      isAvailable: false
     }
   ];
 
@@ -131,7 +137,7 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (selectedIndex === null) {
+    if (selectedIndex === null || !services[selectedIndex]?.isAvailable) {
       alert('Please select a service before confirming your booking.');
       return;
     }
@@ -182,13 +188,18 @@ export default function Contact() {
             <div className="services-grid">
               {services.map((service, index) => (
                 <div
-                  className={`service-card ${selectedIndex === index ? 'selected' : ''}`}
+                  className={`service-card ${service.isAvailable ? 'available' : 'unavailable'} ${selectedIndex === index ? 'selected' : ''}`}
                   key={service.title}
-                  onClick={() => setSelectedIndex(index)}
-                  role="button"
-                  tabIndex={0}
+                  onClick={() => {
+                    if (service.isAvailable) {
+                      setSelectedIndex(index);
+                    }
+                  }}
+                  role={service.isAvailable ? 'button' : undefined}
+                  tabIndex={service.isAvailable ? 0 : -1}
+                  aria-disabled={!service.isAvailable}
                   onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
+                    if (service.isAvailable && (event.key === 'Enter' || event.key === ' ')) {
                       setSelectedIndex(index);
                     }
                   }}
@@ -196,7 +207,11 @@ export default function Contact() {
                   <div className="service-icon">{service.icon}</div>
                   <h3>{service.title}</h3>
                   <p>{service.description}</p>
-                  <div className="price-overlay">${service.price}</div>
+                  {service.isAvailable ? (
+                    <div className="price-overlay">${service.price}</div>
+                  ) : (
+                    <div className="availability-overlay">Currently Unavailable</div>
+                  )}
                 </div>
               ))}
             </div>

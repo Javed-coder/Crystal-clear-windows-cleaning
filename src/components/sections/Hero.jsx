@@ -10,15 +10,14 @@ export default function Hero() {
   return (
     <section className="hero" id="home">
       <div className="hero-content">
-        <p className="hero-kicker">Local, Licensed, and Insured</p>
+        <p className="hero-kicker">Local, Affordable, Clean</p>
         <h1>Window Cleaning That Makes Your Property Stand Out</h1>
         <p>
-          Reliable residential and commercial service with clear pricing, flexible scheduling,
+          Reliable residential and commercial service with affordable pricing, flexible scheduling,
           and quality you can see immediately.
         </p>
         <a href="#contact" className="btn" onClick={handleGetQuote}>Schedule a Service</a>
         <div className="hero-highlights">
-          <span>10+ Years Experience</span>
           <span>100% Satisfaction Focused</span>
           <span>Eco-Friendly Products</span>
         </div>

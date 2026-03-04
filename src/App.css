@@ -24,6 +24,13 @@ body {
   background: var(--surface);
 }
 
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
 /* Navigation */
 nav {
   background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
@@ -246,7 +253,8 @@ nav a:hover {
 
 .about-media img {
   width: 100%;
-  max-width: 420px;
+  max-width: 520px;
+  object-fit: contain;
   border-radius: 10px;
   box-shadow: 0 10px 24px rgba(2, 36, 59, 0.18);
 }
@@ -256,6 +264,13 @@ nav a:hover {
   margin-top: 0.9rem;
 }
 
+.about-slogan {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--secondary);
+}
+
 /* Services Section */
 .services {
   padding: 4rem 20px;
@@ -263,7 +278,7 @@ nav a:hover {
 
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 2rem;
 }
 
@@ -304,7 +319,7 @@ nav a:hover {
 
 .testimonials-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 2rem;
 }
 
@@ -377,6 +392,21 @@ nav a:hover {
   transform: translateY(0);
 }
 
+.service-card.unavailable {
+  cursor: not-allowed;
+  opacity: 0.82;
+  filter: grayscale(0.1);
+}
+
+.service-card.unavailable:hover {
+  transform: none;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.06);
+}
+
+.service-card.unavailable .price-overlay {
+  display: none;
+}
+
 .service-card.selected {
   border: 2px solid rgba(var(--secondary-rgb), 0.2);
   box-shadow: 0 10px 24px rgba(var(--secondary-rgb), 0.1);
@@ -420,6 +450,26 @@ nav a:hover {
   font-weight: 700;
   letter-spacing: 0.05em;
   margin-bottom: 1rem;
+}
+
+.availability-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #fff;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 180ms, transform 180ms;
+}
+
+.service-card.unavailable:hover .availability-overlay {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .contact-info h3 {
@@ -554,6 +604,10 @@ nav a:hover {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
   nav .nav-toggle {
     display: flex;
   }
@@ -579,7 +633,7 @@ nav a:hover {
   }
 
   .nav-menu.open {
-    max-height: 320px;
+    max-height: 420px;
   }
 
   .nav-menu li {
@@ -600,8 +654,14 @@ nav a:hover {
     justify-content: flex-end;
   }
 
+  nav .logo {
+    font-size: 1.1rem;
+    max-width: 78%;
+    line-height: 1.2;
+  }
+
   .hero {
-    padding: 4rem 20px;
+    padding: 4rem 16px;
     min-height: 420px;
     align-items: center;
   }
@@ -616,14 +676,40 @@ nav a:hover {
 
   .about-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
   .contact-content {
     grid-template-columns: 1fr;
   }
 
+  .services-grid,
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
   .hero-highlights {
     justify-content: center;
+  }
+
+  .about,
+  .contact,
+  .testimonials {
+    padding: 3.5rem 16px;
+  }
+
+  .service-card {
+    padding: 1.2rem;
+  }
+
+  .service-card.unavailable .availability-overlay {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .contact-form {
+    padding: 1rem;
   }
 
   .footer-top {
@@ -633,5 +719,54 @@ nav a:hover {
 
   .section-title {
     font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .hero {
+    padding: 3.25rem 12px;
+    min-height: 360px;
+  }
+
+  .hero-content h1 {
+    font-size: 1.65rem;
+  }
+
+  .hero-content p {
+    font-size: 0.95rem;
+  }
+
+  .hero-kicker {
+    font-size: 0.72rem;
+  }
+
+  .section-title {
+    font-size: 1.35rem;
+  }
+
+  .about,
+  .contact,
+  .testimonials {
+    padding: 3rem 12px;
+  }
+
+  .contact-form input,
+  .contact-form select,
+  .contact-form textarea {
+    font-size: 16px;
+  }
+
+  .footer-brand,
+  .footer-column,
+  .footer-bottom {
+    text-align: center;
+  }
+
+  .footer-brand p {
+    margin: 0 auto;
   }
 }

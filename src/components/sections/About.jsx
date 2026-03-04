@@ -1,4 +1,4 @@
-import TeamImage from '../../assets/images/whatsapp-image-1.jpeg';
+import TeamImage from '../../assets/images/about-cleaner-blue.jpg';
 
 const FEATURES = [
   'Licensed and insured technicians',
@@ -30,8 +30,8 @@ export default function About() {
           </div>
 
           <div className="about-media">
-            <img src={TeamImage} alt="Crystal Clear Windows service team" />
-            <p>Professional results with a friendly local team.</p>
+            <img src={TeamImage} alt="Professional window cleaners in blue uniforms at work" />
+            <p className="about-slogan">Local. Affordable. Clean.</p>
           </div>
         </div>
       </div>
