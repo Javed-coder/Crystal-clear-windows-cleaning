@@ -1,7 +1,7 @@
 export default function Hero() {
   const handleGetQuote = (event) => {
     event.preventDefault();
-    const target = document.querySelector('#contact');
+    const target = document.querySelector('#services');
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
     }
@@ -16,7 +16,7 @@ export default function Hero() {
           Reliable residential and commercial service with affordable pricing, flexible scheduling,
           and quality you can see immediately.
         </p>
-        <a href="#contact" className="btn" onClick={handleGetQuote}>Schedule a Service</a>
+        <a href="#services" className="btn" onClick={handleGetQuote}>Schedule a Service</a>
         <div className="hero-highlights">
           <span>100% Satisfaction Focused</span>
           <span>Eco-Friendly Products</span>

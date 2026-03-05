@@ -3,7 +3,7 @@ import Navigation from './components/layout/Navigation'
 import Hero from './components/sections/Hero'
 import About from './components/sections/About'
 import Testimonials from './components/sections/Testimonials'
-import Contact from './components/sections/Contact'
+import Services from './components/sections/Services'
 import Footer from './components/layout/Footer'
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
       <Navigation />
       <Hero />
       <About />
-      <Contact />
+      <Services />
       <Testimonials />
       <Footer />
     </>

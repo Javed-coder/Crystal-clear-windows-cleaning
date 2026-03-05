@@ -41,7 +41,7 @@ function parseLocalDate(dateString) {
   return new Date(`${dateString}T00:00:00`);
 }
 
-export default function Contact() {
+export default function Services() {
   const services = [
     {
       icon: 'RES',
@@ -178,7 +178,7 @@ export default function Contact() {
   };
 
   return (
-    <section className="contact" id="contact">
+    <section className="contact" id="services">
       <div className="container">
         <h2 className="section-title">Confirm Service Booking</h2>
         <p className="section-subtitle">Select your service, choose an available time, and submit your request in one step.</p>

@@ -67,9 +67,9 @@ export default function Navigation() {
         <ul id="primary-navigation" ref={menuRef} className={`nav-menu ${open ? 'open' : ''}`}>
           <li><a href="#home" onClick={(event) => handleNavClick(event, '#home')}>Home</a></li>
           <li><a href="#about" onClick={(event) => handleNavClick(event, '#about')}>About</a></li>
-          <li><a href="#contact" onClick={(event) => handleNavClick(event, '#contact')}>Services</a></li>
+          <li><a href="#services" onClick={(event) => handleNavClick(event, '#services')}>Services</a></li>
           <li><a href="#testimonials" onClick={(event) => handleNavClick(event, '#testimonials')}>Reviews</a></li>
-          <li><a href="#contact" className="nav-cta" onClick={(event) => handleNavClick(event, '#contact')}>Book Now</a></li>
+          <li><a href="#services" className="nav-cta" onClick={(event) => handleNavClick(event, '#services')}>Book Now</a></li>
         </ul>
       </div>
     </nav>
