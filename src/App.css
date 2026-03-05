@@ -22,6 +22,12 @@ body {
   line-height: 1.6;
   color: var(--text);
   background: var(--surface);
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  overflow-x: hidden;
 }
 
 img,
@@ -588,6 +594,8 @@ nav a:hover {
   color: #cbd5e1;
   text-decoration: none;
   transition: color 0.2s ease;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .footer-column a:hover {
@@ -605,6 +613,10 @@ nav a:hover {
 /* Responsive */
 @media (max-width: 768px) {
   .container {
+    padding: 0 16px;
+  }
+
+  nav .container {
     padding: 0 16px;
   }
 
@@ -724,6 +736,10 @@ nav a:hover {
 
 @media (max-width: 480px) {
   .container {
+    padding: 0 12px;
+  }
+
+  nav .container {
     padding: 0 12px;
   }
 
