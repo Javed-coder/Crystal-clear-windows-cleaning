@@ -1,16 +1,18 @@
-export default function Footer() {
+﻿export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="site-footer">
+    <footer className="footer">
       <div className="container">
-        <div className="footer-top">
-          <div className="footer-brand">
+        <div className="footer__grid">
+          <div>
             <h3>Crystal Clear Windows</h3>
-            <p>Professional residential and commercial window cleaning with reliable scheduling.</p>
+            <p>
+              Professional residential and commercial window cleaning with reliable scheduling.
+            </p>
           </div>
 
-          <div className="footer-column">
+          <div>
             <h4>Quick Links</h4>
             <ul>
               <li><a href="#home">Home</a></li>
@@ -20,7 +22,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="footer-column">
+          <div>
             <h4>Contact</h4>
             <ul>
               <li><a href="tel:613-600-4850">(613) 600-4850</a></li>
@@ -30,7 +32,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="footer-bottom">
+        <div className="footer__bottom">
           <p>&copy; {year} Crystal Clear Windows. All rights reserved.</p>
         </div>
       </div>

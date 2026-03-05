@@ -1,17 +1,59 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
 
-// EmailJS config: prefer Vite env vars. Create a `.env` with these keys:
-// VITE_EMAILJS_USER, VITE_EMAILJS_SERVICE_ID, VITE_EMAILJS_TEMPLATE_ID
 const EMAILJS_USER = import.meta.env.VITE_EMAILJS_USER || 'eLBVjSrb7R2hEBdvB';
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_mduwx5q';
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_9mfpx8h';
+const BUSINESS_EMAIL = 'crystalclearwindows077@gmail.com';
 
 emailjs.init(EMAILJS_USER);
 
-const BUSINESS_EMAIL = 'romal.alimzai07@gmail.com';
+const SERVICE_OPTIONS = [
+  {
+    icon: 'RES',
+    title: 'Residential',
+    description: 'Professional window cleaning for homes, including interior and exterior surfaces.',
+    price: 49,
+    available: true,
+  },
+  {
+    icon: 'COM',
+    title: 'Commercial',
+    description: 'High-rise and building window cleaning services with safety certifications.',
+    price: 149,
+    available: false,
+  },
+  {
+    icon: 'NEW',
+    title: 'Post-Construction',
+    description: 'Specialized cleaning services to remove debris and residue from new construction.',
+    price: 199,
+    available: false,
+  },
+  {
+    icon: 'PWR',
+    title: 'Pressure Washing',
+    description: 'Pressure washing services for siding, decks, and other exterior surfaces.',
+    price: 89,
+    available: false,
+  },
+  {
+    icon: 'FIX',
+    title: 'Screen Repair',
+    description: 'Window screen repair and replacement services to keep bugs out.',
+    price: 39,
+    available: false,
+  },
+  {
+    icon: 'PLAN',
+    title: 'Maintenance Plans',
+    description: 'Recurring service plans to keep your windows pristine year-round.',
+    price: 69,
+    available: false,
+  },
+];
 
-const WEEKDAY_TIME_SLOTS = [
+const WEEKDAY_TIMES = [
   { label: '08:00 AM', minutes: 8 * 60 },
   { label: '09:00 AM', minutes: 9 * 60 },
   { label: '10:00 AM', minutes: 10 * 60 },
@@ -21,302 +63,282 @@ const WEEKDAY_TIME_SLOTS = [
   { label: '02:00 PM', minutes: 14 * 60 },
   { label: '03:00 PM', minutes: 15 * 60 },
   { label: '04:00 PM', minutes: 16 * 60 },
-  { label: '05:00 PM', minutes: 17 * 60 }
+  { label: '05:00 PM', minutes: 17 * 60 },
 ];
 
-const WEEKEND_TIME_SLOTS = [
+const WEEKEND_TIMES = [
   { label: '09:00 AM', minutes: 9 * 60 },
   { label: '10:00 AM', minutes: 10 * 60 },
   { label: '11:00 AM', minutes: 11 * 60 },
   { label: '12:00 PM', minutes: 12 * 60 },
   { label: '01:00 PM', minutes: 13 * 60 },
-  { label: '02:00 PM', minutes: 14 * 60 }
+  { label: '02:00 PM', minutes: 14 * 60 },
 ];
 
-function toDateString(date) {
-  return date.toISOString().slice(0, 10);
+function getLocalDateInputValue(date) {
+  const tzAdjusted = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return tzAdjusted.toISOString().slice(0, 10);
 }
 
-function parseLocalDate(dateString) {
+function asLocalDate(dateString) {
   return new Date(`${dateString}T00:00:00`);
 }
 
 export default function Services() {
-  const services = [
-    {
-      icon: 'RES',
-      title: 'Residential',
-      description: 'Professional window cleaning for homes, including interior and exterior surfaces.',
-      price: 49,
-      isAvailable: true
-    },
-    {
-      icon: 'COM',
-      title: 'Commercial',
-      description: 'High-rise and building window cleaning services with safety certifications.',
-      price: 149,
-      isAvailable: false
-    },
-    {
-      icon: 'NEW',
-      title: 'Post-Construction',
-      description: 'Specialized cleaning services to remove debris and residue from new construction.',
-      price: 199,
-      isAvailable: false
-    },
-    {
-      icon: 'PWR',
-      title: 'Pressure Washing',
-      description: 'Pressure washing services for siding, decks, and other exterior surfaces.',
-      price: 89,
-      isAvailable: false
-    },
-    {
-      icon: 'FIX',
-      title: 'Screen Repair',
-      description: 'Window screen repair and replacement services to keep bugs out.',
-      price: 39,
-      isAvailable: false
-    },
-    {
-      icon: 'PLAN',
-      title: 'Maintenance Plans',
-      description: 'Recurring service plans to keep your windows pristine year-round.',
-      price: 69,
-      isAvailable: false
-    }
-  ];
-
-  const [formData, setFormData] = useState({
+  const [formValues, setFormValues] = useState({
     from_name: '',
     from_email: '',
     phone: '',
-    message: '',
     booking_date: '',
-    booking_time: ''
+    booking_time: '',
+    message: '',
   });
-  const [selectedIndex, setSelectedIndex] = useState(null);
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedServiceIndex, setSelectedServiceIndex] = useState(null);
+  const [selectedImageCount, setSelectedImageCount] = useState(0);
+  const [sending, setSending] = useState(false);
+
   const formRef = useRef(null);
-  const mediaRef = useRef(null);
-  const todayString = toDateString(new Date());
+  const mediaInputRef = useRef(null);
 
-  const availableTimeSlots = useMemo(() => {
-    if (!formData.booking_date) return [];
+  const today = useMemo(() => getLocalDateInputValue(new Date()), []);
 
-    const selected = parseLocalDate(formData.booking_date);
-    const day = selected.getDay();
-    const isWeekend = day === 0 || day === 6;
-    const baseSlots = isWeekend ? WEEKEND_TIME_SLOTS : WEEKDAY_TIME_SLOTS;
+  const availableTimes = useMemo(() => {
+    if (!formValues.booking_date) return [];
 
-    if (formData.booking_date !== todayString) {
+    const chosenDate = asLocalDate(formValues.booking_date);
+    const isWeekend = chosenDate.getDay() === 0 || chosenDate.getDay() === 6;
+    const baseSlots = isWeekend ? WEEKEND_TIMES : WEEKDAY_TIMES;
+
+    if (formValues.booking_date !== today) {
       return baseSlots;
     }
 
     const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    return baseSlots.filter((slot) => slot.minutes > currentMinutes + 59);
-  }, [formData.booking_date, todayString]);
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    return baseSlots.filter((slot) => slot.minutes > nowMinutes + 59);
+  }, [formValues.booking_date, today]);
 
   useEffect(() => {
-    if (!formData.booking_time) return;
-    const stillAvailable = availableTimeSlots.some((slot) => slot.label === formData.booking_time);
-    if (!stillAvailable) {
-      setFormData((prev) => ({ ...prev, booking_time: '' }));
+    if (!formValues.booking_time) return;
+    if (!availableTimes.some((slot) => slot.label === formValues.booking_time)) {
+      setFormValues((prev) => ({ ...prev, booking_time: '' }));
     }
-  }, [availableTimeSlots, formData.booking_time]);
+  }, [availableTimes, formValues.booking_time]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  const selectedService =
+    selectedServiceIndex !== null ? SERVICE_OPTIONS[selectedServiceIndex] : null;
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (selectedIndex === null || !services[selectedIndex]?.isAvailable) {
-      alert('Please select a service before confirming your booking.');
-      return;
-    }
-    if (!formData.booking_date || !formData.booking_time) {
-      alert('Please select your booking date and available time.');
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!selectedService || !selectedService.available) {
+      alert('Please select an available service before submitting.');
       return;
     }
 
-    setIsSubmitting(true);
+    if (!formValues.booking_date || !formValues.booking_time) {
+      alert('Please choose your booking date and available time.');
+      return;
+    }
+
+    setSending(true);
 
     try {
-      await emailjs.sendForm(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        formRef.current
-      );
+      await emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formRef.current);
 
-      alert('Thank you for your message! We will contact you soon.');
-      setFormData({
+      setFormValues({
         from_name: '',
         from_email: '',
         phone: '',
-        message: '',
         booking_date: '',
-        booking_time: ''
+        booking_time: '',
+        message: '',
       });
-      setSelectedIndex(null);
-      setSelectedFiles([]);
-      if (mediaRef.current) {
-        mediaRef.current.value = '';
+      setSelectedServiceIndex(null);
+      setSelectedImageCount(0);
+      if (mediaInputRef.current) {
+        mediaInputRef.current.value = '';
       }
+      alert('Thank you. Your booking request has been sent.');
     } catch (error) {
-      console.error('Error sending email:', error);
-      alert('There was an error sending your message. Please try again.');
+      console.error('Email send failed:', error);
+      alert('Unable to send right now. Please try again.');
     } finally {
-      setIsSubmitting(false);
+      setSending(false);
     }
   };
 
   return (
-    <section className="contact" id="services">
+    <section className="services-section" id="services">
       <div className="container">
         <h2 className="section-title">Confirm Service Booking</h2>
-        <p className="section-subtitle">Select your service, choose an available time, and submit your request in one step.</p>
+        <p className="section-subtitle">
+          Select your service, choose an available time, and submit your request in one step.
+        </p>
+
         <div className="booking-layout">
-          <div className="booking-services">
-            <h3>Select a Service</h3>
-            <div className="services-grid">
-              {services.map((service, index) => (
-                <div
-                  className={`service-card ${service.isAvailable ? 'available' : 'unavailable'} ${selectedIndex === index ? 'selected' : ''}`}
-                  key={service.title}
-                  onClick={() => {
-                    if (service.isAvailable) {
-                      setSelectedIndex(index);
-                    }
-                  }}
-                  role={service.isAvailable ? 'button' : undefined}
-                  tabIndex={service.isAvailable ? 0 : -1}
-                  aria-disabled={!service.isAvailable}
-                  onKeyDown={(event) => {
-                    if (service.isAvailable && (event.key === 'Enter' || event.key === ' ')) {
-                      setSelectedIndex(index);
-                    }
-                  }}
-                >
-                  <div className="service-icon">{service.icon}</div>
-                  <h3>{service.title}</h3>
-                  <p>{service.description}</p>
-                  {service.isAvailable ? (
-                    <div className="price-overlay">${service.price}</div>
-                  ) : (
-                    <div className="availability-overlay">Currently Unavailable</div>
-                  )}
-                </div>
-              ))}
+          <div>
+            <h3 className="booking-layout__title">Select a Service</h3>
+            <div className="service-grid">
+              {SERVICE_OPTIONS.map((service, index) => {
+                const isSelected = selectedServiceIndex === index;
+                const enabled = service.available;
+
+                return (
+                  <article
+                    key={service.title}
+                    className={[
+                      'service-card',
+                      enabled ? 'service-card--enabled' : 'service-card--disabled',
+                      isSelected ? 'service-card--selected' : '',
+                    ].join(' ')}
+                    onClick={() => {
+                      if (enabled) setSelectedServiceIndex(index);
+                    }}
+                    onKeyDown={(event) => {
+                      if (!enabled) return;
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setSelectedServiceIndex(index);
+                      }
+                    }}
+                    role={enabled ? 'button' : undefined}
+                    tabIndex={enabled ? 0 : -1}
+                    aria-disabled={!enabled}
+                  >
+                    <span className="service-tag">{service.icon}</span>
+                    {enabled ? (
+                      <span className="service-price">${service.price}</span>
+                    ) : (
+                      <span className="service-status">Currently Unavailable</span>
+                    )}
+                    <h4>{service.title}</h4>
+                    <p>{service.description}</p>
+                  </article>
+                );
+              })}
             </div>
           </div>
 
-          <form ref={formRef} className="contact-form" onSubmit={handleSubmit}>
+          <form ref={formRef} className="booking-form" onSubmit={handleSubmit}>
             <input type="hidden" name="to_email" value={BUSINESS_EMAIL} />
-            <input type="hidden" name="selected_service_name" value={selectedIndex !== null ? services[selectedIndex].title : ''} />
-            <input type="hidden" name="selected_service_price" value={selectedIndex !== null ? String(services[selectedIndex].price) : ''} />
-            {selectedIndex !== null && (
-              <div className="booking-summary">
-                Selected Service: <strong>{services[selectedIndex].title}</strong> (${services[selectedIndex].price})
-              </div>
-            )}
+            <input
+              type="hidden"
+              name="selected_service_name"
+              value={selectedService ? selectedService.title : ''}
+            />
+            <input
+              type="hidden"
+              name="selected_service_price"
+              value={selectedService ? String(selectedService.price) : ''}
+            />
+
+            {selectedService ? (
+              <p className="booking-summary">
+                Selected Service: <strong>{selectedService.title}</strong> (${selectedService.price})
+              </p>
+            ) : null}
 
             <label htmlFor="from_name">Full Name</label>
-            <input 
+            <input
               id="from_name"
-              type="text" 
+              type="text"
               name="from_name"
+              value={formValues.from_name}
+              onChange={handleInputChange}
               placeholder="Enter your full name"
-              value={formData.from_name}
-              onChange={handleChange}
-              required 
+              required
             />
+
             <label htmlFor="from_email">Email Address</label>
-            <input 
+            <input
               id="from_email"
-              type="email" 
+              type="email"
               name="from_email"
+              value={formValues.from_email}
+              onChange={handleInputChange}
               placeholder="Enter your email"
-              value={formData.from_email}
-              onChange={handleChange}
-              required 
+              required
             />
+
             <label htmlFor="phone">Phone Number</label>
-            <input 
+            <input
               id="phone"
-              type="tel" 
+              type="tel"
               name="phone"
+              value={formValues.phone}
+              onChange={handleInputChange}
               placeholder="Enter your phone number"
-              value={formData.phone}
-              onChange={handleChange}
               pattern="[0-9+()\\-\\s]{7,20}"
-              required 
+              required
             />
+
             <label htmlFor="booking_date">Booking Date</label>
             <input
               id="booking_date"
               type="date"
               name="booking_date"
-              min={todayString}
-              value={formData.booking_date}
-              onChange={handleChange}
+              min={today}
+              value={formValues.booking_date}
+              onChange={handleInputChange}
               required
             />
+
             <label htmlFor="booking_time">Available Time</label>
             <select
               id="booking_time"
               name="booking_time"
-              value={formData.booking_time}
-              onChange={handleChange}
-              disabled={!formData.booking_date || availableTimeSlots.length === 0}
+              value={formValues.booking_time}
+              onChange={handleInputChange}
+              disabled={!formValues.booking_date || availableTimes.length === 0}
               required
             >
               <option value="">
-                {!formData.booking_date
+                {!formValues.booking_date
                   ? 'Select a date first'
-                  : availableTimeSlots.length === 0
+                  : availableTimes.length === 0
                     ? 'No slots available today'
                     : 'Select available time'}
               </option>
-              {availableTimeSlots.map((slot) => (
+              {availableTimes.map((slot) => (
                 <option key={slot.label} value={slot.label}>
                   {slot.label}
                 </option>
               ))}
             </select>
+
             <label htmlFor="message">Project Details (optional)</label>
-            <textarea 
+            <textarea
               id="message"
               name="message"
-              placeholder="Tell us about your property, windows, and any special access details."
-              value={formData.message}
-              onChange={handleChange}
-            ></textarea>
+              value={formValues.message}
+              onChange={handleInputChange}
+              placeholder="Tell us about your property and any access details."
+            />
 
             <label htmlFor="media">Attach House Images (optional)</label>
             <input
-              ref={mediaRef}
+              ref={mediaInputRef}
               id="media"
               type="file"
               name="media"
               accept="image/*"
               multiple
-              onChange={(event) => setSelectedFiles(Array.from(event.target.files || []))}
+              onChange={(event) => setSelectedImageCount((event.target.files || []).length)}
             />
-            <p className="file-hint">
-              {selectedFiles.length > 0
-                ? `${selectedFiles.length} image(s) selected`
+            <p className="file-count">
+              {selectedImageCount > 0
+                ? `${selectedImageCount} image(s) selected`
                 : 'No images selected yet'}
             </p>
 
-            <button type="submit" className="btn" disabled={isSubmitting}>
-              {isSubmitting ? 'Submitting...' : 'Submit Booking Request'}
+            <button className="btn" type="submit" disabled={sending}>
+              {sending ? 'Submitting...' : 'Submit Booking Request'}
             </button>
           </form>
         </div>

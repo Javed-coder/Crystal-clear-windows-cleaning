@@ -1,75 +1,92 @@
-import { useEffect, useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
+
+const LINKS = [
+  { label: 'Home', href: '#home' },
+  { label: 'About', href: '#about' },
+  { label: 'Services', href: '#services' },
+  { label: 'Reviews', href: '#testimonials' },
+];
 
 export default function Navigation() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
-  const buttonRef = useRef(null);
+  const toggleRef = useRef(null);
 
-  const handleNavClick = (event, href) => {
+  const goToSection = (event, href) => {
     event.preventDefault();
     const target = document.querySelector(href);
     if (target) {
-      target.scrollIntoView({ behavior: 'smooth' });
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     setOpen(false);
   };
 
   useEffect(() => {
-    const onKey = (event) => {
-      if (event.key === 'Escape') setOpen(false);
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
     };
 
-    const onDocClick = (event) => {
+    const closeOnOutside = (event) => {
       if (!open) return;
       if (
         menuRef.current &&
         !menuRef.current.contains(event.target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target)
+        toggleRef.current &&
+        !toggleRef.current.contains(event.target)
       ) {
         setOpen(false);
       }
     };
 
-    document.addEventListener('keydown', onKey);
-    document.addEventListener('click', onDocClick);
+    document.addEventListener('keydown', closeOnEscape);
+    document.addEventListener('click', closeOnOutside);
+
     return () => {
-      document.removeEventListener('keydown', onKey);
-      document.removeEventListener('click', onDocClick);
+      document.removeEventListener('keydown', closeOnEscape);
+      document.removeEventListener('click', closeOnOutside);
     };
   }, [open]);
 
   return (
-    <nav>
-      <div className="container">
-        <a href="#home" className="logo" onClick={(event) => handleNavClick(event, '#home')}>
+    <nav className="nav">
+      <div className="container nav__inner">
+        <a className="nav__brand" href="#home" onClick={(event) => goToSection(event, '#home')}>
           Crystal Clear Windows
         </a>
 
         <button
-          ref={buttonRef}
-          className="nav-toggle"
+          ref={toggleRef}
+          className="nav__toggle"
+          type="button"
+          aria-label={open ? 'Close menu' : 'Open menu'}
           aria-controls="primary-navigation"
           aria-expanded={open}
           onClick={() => setOpen((state) => !state)}
         >
-          <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d={open ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
-            />
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d={open ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
           </svg>
         </button>
 
-        <ul id="primary-navigation" ref={menuRef} className={`nav-menu ${open ? 'open' : ''}`}>
-          <li><a href="#home" onClick={(event) => handleNavClick(event, '#home')}>Home</a></li>
-          <li><a href="#about" onClick={(event) => handleNavClick(event, '#about')}>About</a></li>
-          <li><a href="#services" onClick={(event) => handleNavClick(event, '#services')}>Services</a></li>
-          <li><a href="#testimonials" onClick={(event) => handleNavClick(event, '#testimonials')}>Reviews</a></li>
-          <li><a href="#services" className="nav-cta" onClick={(event) => handleNavClick(event, '#services')}>Book Now</a></li>
+        <ul
+          id="primary-navigation"
+          className={`nav__menu ${open ? 'nav__menu--open' : ''}`}
+          ref={menuRef}
+        >
+          {LINKS.map((link) => (
+            <li key={link.href}>
+              <a href={link.href} onClick={(event) => goToSection(event, link.href)}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+          <li>
+            <a className="nav__cta" href="#services" onClick={(event) => goToSection(event, '#services')}>
+              Book Now
+            </a>
+          </li>
         </ul>
       </div>
     </nav>

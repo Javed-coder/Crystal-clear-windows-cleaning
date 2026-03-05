@@ -1,14 +1,12 @@
-/* Minimal global baseline; component styling lives in App.css */
-html,
+﻿html,
 body,
 #root {
-  width: 100%;
-  min-height: 100%;
   margin: 0;
   padding: 0;
+  width: 100%;
+  min-height: 100%;
 }
 
 body {
   min-width: 320px;
-  overflow-x: hidden;
 }

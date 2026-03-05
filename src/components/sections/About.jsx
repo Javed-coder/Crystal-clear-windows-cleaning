@@ -1,10 +1,10 @@
-import TeamImage from '../../assets/images/about-cleaner-blue.jpg';
+﻿import cleanerImage from '../../assets/images/about-cleaner-blue.jpg';
 
 const FEATURES = [
   'Licensed and insured technicians',
   'Detail-oriented interior and exterior cleaning',
   'On-time appointments with clear communication',
-  'Safe products for families, pets, and landscaping'
+  'Safe products for families, pets, and landscaping',
 ];
 
 export default function About() {
@@ -12,26 +12,27 @@ export default function About() {
     <section className="about" id="about">
       <div className="container">
         <h2 className="section-title">Why Homeowners and Businesses Choose Us</h2>
-        <div className="about-grid">
-          <div className="about-text">
+
+        <div className="about__grid">
+          <div className="about__copy">
             <h3>Your Trusted Window Cleaning Partner</h3>
             <p>
-              Crystal Clear Windows delivers dependable service, polished results,
-              and respectful customer care on every visit.
+              Crystal Clear Windows delivers dependable service, polished results, and respectful
+              customer care on every visit.
             </p>
-            <div className="about-features">
-              {FEATURES.map((feature) => (
-                <div className="feature" key={feature}>
-                  <span className="feature-icon" aria-hidden="true">OK</span>
-                  <span>{feature}</span>
+            <div className="about__features">
+              {FEATURES.map((item) => (
+                <div className="about__feature" key={item}>
+                  <span className="about__feature-tag" aria-hidden="true">OK</span>
+                  <span>{item}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="about-media">
-            <img src={TeamImage} alt="Professional window cleaners in blue uniforms at work" />
-            <p className="about-slogan">Local. Affordable. Clean.</p>
+          <div className="about__media">
+            <img src={cleanerImage} alt="Professional window cleaners in blue uniforms" />
+            <p className="about__slogan">Local. Affordable. Clean.</p>
           </div>
         </div>
       </div>
