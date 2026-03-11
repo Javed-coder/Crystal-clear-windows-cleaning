@@ -1,4 +1,6 @@
-﻿export default function Hero() {
+import logo from '../../assets/images/Logo.jpeg';
+
+export default function Hero() {
   const goToBooking = (event) => {
     event.preventDefault();
     const target = document.querySelector('#services');
@@ -9,6 +11,10 @@
 
   return (
     <section className="hero" id="home">
+      <div className="hero__media" aria-hidden="true">
+        <img src={logo} alt="" className="hero__bg-logo" />
+      </div>
+
       <div className="container hero__content">
         <p className="hero__kicker">Local. Affordable. Clean.</p>
         <h1>Window Cleaning That Makes Your Property Stand Out</h1>

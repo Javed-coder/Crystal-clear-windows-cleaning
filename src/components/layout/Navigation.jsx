@@ -1,4 +1,5 @@
-﻿import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import logo from '../../assets/images/Logo_edited.png';
 
 const LINKS = [
   { label: 'Home', href: '#home' },
@@ -53,7 +54,7 @@ export default function Navigation() {
     <nav className="nav">
       <div className="container nav__inner">
         <a className="nav__brand" href="#home" onClick={(event) => goToSection(event, '#home')}>
-          Crystal Clear Windows
+          <img src={logo} alt="Crystal Clear Windows logo" className="nav__logo" />
         </a>
 
         <button
@@ -83,7 +84,11 @@ export default function Navigation() {
             </li>
           ))}
           <li>
-            <a className="nav__cta" href="#services" onClick={(event) => goToSection(event, '#services')}>
+            <a
+              className="nav__cta"
+              href="#services"
+              onClick={(event) => goToSection(event, '#services')}
+            >
               Book Now
             </a>
           </li>
