@@ -84,7 +84,7 @@ function asLocalDate(dateString) {
   return new Date(`${dateString}T00:00:00`);
 }
 
-export default function Services() {
+export default function Services({ thankYouPath = '/thank-you' }) {
   const [formValues, setFormValues] = useState({
     from_name: '',
     from_email: '',
@@ -146,6 +146,11 @@ export default function Services() {
       return;
     }
 
+    if (!formRef.current) {
+      alert('The booking form is unavailable right now. Please refresh and try again.');
+      return;
+    }
+
     setSending(true);
 
     try {
@@ -164,7 +169,7 @@ export default function Services() {
       if (mediaInputRef.current) {
         mediaInputRef.current.value = '';
       }
-      alert('Thank you. Your booking request has been sent.');
+      window.location.assign(thankYouPath);
     } catch (error) {
       console.error('Email send failed:', error);
       alert('Unable to send right now. Please try again.');

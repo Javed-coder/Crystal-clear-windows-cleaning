@@ -4,19 +4,36 @@ import Hero from './components/sections/Hero';
 import About from './components/sections/About';
 import Services from './components/sections/Services';
 import Testimonials from './components/sections/Testimonials';
+import ThankYou from './components/sections/ThankYou';
 import Footer from './components/layout/Footer';
 
+const THANK_YOU_PATH = '/thank-you';
+
+function normalizePathname(pathname) {
+  const trimmedPath = pathname.replace(/\/+$/, '');
+  return trimmedPath || '/';
+}
+
 export default function App() {
+  const currentPath = normalizePathname(window.location.pathname);
+  const isThankYouPage = currentPath === THANK_YOU_PATH;
+
   return (
     <>
-      <Navigation />
+      <Navigation isHomePage={!isThankYouPage} />
       <main>
-        <Hero />
-        <About />
-        <Services />
-        <Testimonials />
+        {isThankYouPage ? (
+          <ThankYou />
+        ) : (
+          <>
+            <Hero />
+            <About />
+            <Services thankYouPath={THANK_YOU_PATH} />
+            <Testimonials />
+          </>
+        )}
       </main>
-      <Footer />
+      <Footer isHomePage={!isThankYouPage} />
     </>
   );
 }

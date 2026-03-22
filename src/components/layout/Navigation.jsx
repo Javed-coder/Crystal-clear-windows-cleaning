@@ -8,12 +8,18 @@ const LINKS = [
   { label: 'Reviews', href: '#testimonials' },
 ];
 
-export default function Navigation() {
+export default function Navigation({ isHomePage = true }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
   const toggleRef = useRef(null);
+  const resolveHref = (href) => (isHomePage ? href : `/${href}`);
 
   const goToSection = (event, href) => {
+    if (!isHomePage) {
+      setOpen(false);
+      return;
+    }
+
     event.preventDefault();
     const target = document.querySelector(href);
     if (target) {
@@ -53,7 +59,11 @@ export default function Navigation() {
   return (
     <nav className="nav">
       <div className="container nav__inner">
-        <a className="nav__brand" href="#home" onClick={(event) => goToSection(event, '#home')}>
+        <a
+          className="nav__brand"
+          href={isHomePage ? '#home' : '/'}
+          onClick={(event) => goToSection(event, '#home')}
+        >
           <img src={logo} alt="Crystal Clear Windows logo" className="nav__logo" />
         </a>
 
@@ -78,7 +88,7 @@ export default function Navigation() {
         >
           {LINKS.map((link) => (
             <li key={link.href}>
-              <a href={link.href} onClick={(event) => goToSection(event, link.href)}>
+              <a href={resolveHref(link.href)} onClick={(event) => goToSection(event, link.href)}>
                 {link.label}
               </a>
             </li>
@@ -86,7 +96,7 @@ export default function Navigation() {
           <li>
             <a
               className="nav__cta"
-              href="#services"
+              href={resolveHref('#services')}
               onClick={(event) => goToSection(event, '#services')}
             >
               Book Now
