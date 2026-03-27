@@ -8,6 +8,9 @@ const LINKS = [
   { label: 'Reviews', href: '#testimonials' },
 ];
 
+const PHONE_NUMBER = '(613) 600-4850';
+const PHONE_LINK = '613-600-4850';
+
 export default function Navigation({ isHomePage = true }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
@@ -57,53 +60,63 @@ export default function Navigation({ isHomePage = true }) {
   }, [open]);
 
   return (
-    <nav className="nav">
-      <div className="container nav__inner">
-        <a
-          className="nav__brand"
-          href={isHomePage ? '#home' : '/'}
-          onClick={(event) => goToSection(event, '#home')}
-        >
-          <img src={logo} alt="Crystal Clear Windows logo" className="nav__logo" />
-        </a>
+    <>
+      <a className="call-strip" href={`tel:${PHONE_LINK}`} aria-label={`Call now at ${PHONE_NUMBER}`}>
+        <div className="container call-strip__inner">
+          <span className="call-strip__label">Need help fast?</span>
+          <span className="call-strip__action">Call Now</span>
+          <span className="call-strip__number">{PHONE_NUMBER}</span>
+        </div>
+      </a>
 
-        <button
-          ref={toggleRef}
-          className="nav__toggle"
-          type="button"
-          aria-label={open ? 'Close menu' : 'Open menu'}
-          aria-controls="primary-navigation"
-          aria-expanded={open}
-          onClick={() => setOpen((state) => !state)}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d={open ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
-          </svg>
-        </button>
+      <nav className="nav">
+        <div className="container nav__inner">
+          <a
+            className="nav__brand"
+            href={isHomePage ? '#home' : '/'}
+            onClick={(event) => goToSection(event, '#home')}
+          >
+            <img src={logo} alt="Crystal Clear Windows logo" className="nav__logo" />
+          </a>
 
-        <ul
-          id="primary-navigation"
-          className={`nav__menu ${open ? 'nav__menu--open' : ''}`}
-          ref={menuRef}
-        >
-          {LINKS.map((link) => (
-            <li key={link.href}>
-              <a href={resolveHref(link.href)} onClick={(event) => goToSection(event, link.href)}>
-                {link.label}
+          <button
+            ref={toggleRef}
+            className="nav__toggle"
+            type="button"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-controls="primary-navigation"
+            aria-expanded={open}
+            onClick={() => setOpen((state) => !state)}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d={open ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
+            </svg>
+          </button>
+
+          <ul
+            id="primary-navigation"
+            className={`nav__menu ${open ? 'nav__menu--open' : ''}`}
+            ref={menuRef}
+          >
+            {LINKS.map((link) => (
+              <li key={link.href}>
+                <a href={resolveHref(link.href)} onClick={(event) => goToSection(event, link.href)}>
+                  {link.label}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a
+                className="nav__cta"
+                href={resolveHref('#services')}
+                onClick={(event) => goToSection(event, '#services')}
+              >
+                Book Now
               </a>
             </li>
-          ))}
-          <li>
-            <a
-              className="nav__cta"
-              href={resolveHref('#services')}
-              onClick={(event) => goToSection(event, '#services')}
-            >
-              Book Now
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
+          </ul>
+        </div>
+      </nav>
+    </>
   );
 }
