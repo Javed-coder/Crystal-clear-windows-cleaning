@@ -3,7 +3,7 @@ import logo from '../../assets/images/Logo.jpeg';
 export default function Hero() {
   const goToBooking = (event) => {
     event.preventDefault();
-    const target = document.querySelector('#services');
+    const target = document.querySelector('#booking-form');
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
