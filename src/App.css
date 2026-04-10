@@ -318,6 +318,18 @@ video {
   font-size: 0.85rem;
 }
 
+.hero__phone-cta {
+  margin-top: 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.hero__phone-cta a {
+  color: #f59e0b;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
 .btn {
   display: inline-block;
   border: 0;

@@ -24,8 +24,8 @@ export default function Hero() {
         <a className="btn" href="#services" onClick={goToBooking}>
           Schedule a Service
         </a>
-        <p style={{ marginTop: '20px', fontSize: '16px', fontWeight: '500' }}>
-          Or prefer to book by phone? <a href="tel:613-600-4850" style={{ color: '#2563eb', textDecoration: 'underline' }}>Call (613) 600-4850</a> for instant on-call booking!
+        <p className="hero__phone-cta">
+          Or prefer to book by phone? <a href="tel:613-600-4850">Call (613) 600-4850</a> for instant on-call booking!
         </p>
         <div className="hero__chips">
           <span>100% Satisfaction Focused</span>
