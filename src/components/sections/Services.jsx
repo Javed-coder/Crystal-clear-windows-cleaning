@@ -235,7 +235,7 @@ export default function Services({ thankYouPath = '/thank-you' }) {
             </div>
           </div>
 
-          <form ref={formRef} id="booking-form" className="booking-form" onSubmit={handleSubmit}>
+          <form ref={formRef} className="booking-form" onSubmit={handleSubmit}>
             <input type="hidden" name="to_email" value={BUSINESS_EMAIL} />
             <input
               type="hidden"

@@ -4,7 +4,7 @@ import logo from '../../assets/images/Logo_edited.png';
 const LINKS = [
   { label: 'Home', href: '#home' },
   { label: 'About', href: '#about' },
-  { label: 'Services', href: '#booking-form' },
+  { label: 'Services', href: '#services' },
   { label: 'Reviews', href: '#testimonials' },
 ];
 
