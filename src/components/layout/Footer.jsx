@@ -26,7 +26,8 @@ export default function Footer({ isHomePage = true }) {
           <div>
             <h4>Contact</h4>
             <ul>
-              <li><a href="tel:613-600-4850">(613) 600-4850</a></li>
+              <li><strong><a href="tel:613-600-4850">(613) 600-4850</a></strong></li>
+              <li style={{ fontSize: '14px', fontStyle: 'italic' }}>Call for instant on-call booking</li>
               <li><a href="mailto:crystalclearwindows077@gmail.com">crystalclearwindows077@gmail.com</a></li>
               <li>Mon-Sat: 8:00 AM - 6:00 PM</li>
             </ul>

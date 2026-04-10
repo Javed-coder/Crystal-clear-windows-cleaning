@@ -28,9 +28,9 @@ export default function App() {
         ) : (
           <>
             <Hero />
-            <About />
             <Services thankYouPath={THANK_YOU_PATH} />
             <Testimonials />
+            <About />
           </>
         )}
       </main>

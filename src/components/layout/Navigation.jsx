@@ -63,8 +63,8 @@ export default function Navigation({ isHomePage = true }) {
     <>
       <a className="call-strip" href={`tel:${PHONE_LINK}`} aria-label={`Call now at ${PHONE_NUMBER}`}>
         <div className="container call-strip__inner">
-          <span className="call-strip__label">Need help fast?</span>
-          <span className="call-strip__action">Call Now</span>
+          <span className="call-strip__label">On-Call Booking Available!</span>
+          <span className="call-strip__action">Call Now to Book</span>
           <span className="call-strip__number">{PHONE_NUMBER}</span>
         </div>
       </a>

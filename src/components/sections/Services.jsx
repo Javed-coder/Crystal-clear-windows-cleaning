@@ -181,10 +181,15 @@ export default function Services({ thankYouPath = '/thank-you' }) {
   return (
     <section className="services-section" id="services">
       <div className="container">
-        <h2 className="section-title">Confirm Service Booking</h2>
+        <h2 className="section-title">Book Your Service</h2>
         <p className="section-subtitle">
           Select your service, choose an available time, and submit your request in one step.
         </p>
+        <div style={{ backgroundColor: '#f0f9ff', border: '2px solid #3b82f6', borderRadius: '8px', padding: '16px', marginBottom: '32px', textAlign: 'center' }}>
+          <p style={{ margin: '8px 0', fontSize: '15px' }}>
+            <strong>Prefer talking to us directly?</strong> Call <a href="tel:613-600-4850" style={{ color: '#2563eb', fontWeight: 'bold', textDecoration: 'underline' }}>(613) 600-4850</a> for instant on-call booking and personalized service recommendations!
+          </p>
+        </div>
 
         <div className="booking-layout">
           <div>
