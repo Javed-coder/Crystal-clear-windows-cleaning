@@ -97,8 +97,9 @@ export default function Services({ thankYouPath = '/thank-you' }) {
   const [selectedImageCount, setSelectedImageCount] = useState(0);
   const [sending, setSending] = useState(false);
 
-  const formRef = useRef(null);
+  const formRef = useRef(null); // Used for emailjs form submission
   const mediaInputRef = useRef(null);
+  const bookingFormSectionRef = useRef(null); // Used to scroll to form when service selected
 
   const today = useMemo(() => getLocalDateInputValue(new Date()), []);
 
@@ -131,6 +132,21 @@ export default function Services({ thankYouPath = '/thank-you' }) {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle service card click: select service and scroll to booking form
+  const handleServiceClick = (index) => {
+    const service = SERVICE_OPTIONS[index];
+    if (service.available) {
+      // Update selected service
+      setSelectedServiceIndex(index);
+      // Scroll to booking form with smooth animation
+      setTimeout(() => {
+        if (bookingFormSectionRef.current) {
+          bookingFormSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 0);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -207,14 +223,12 @@ export default function Services({ thankYouPath = '/thank-you' }) {
                       enabled ? 'service-card--enabled' : 'service-card--disabled',
                       isSelected ? 'service-card--selected' : '',
                     ].join(' ')}
-                    onClick={() => {
-                      if (enabled) setSelectedServiceIndex(index);
-                    }}
+                    onClick={() => handleServiceClick(index)}
                     onKeyDown={(event) => {
                       if (!enabled) return;
                       if (event.key === 'Enter' || event.key === ' ') {
                         event.preventDefault();
-                        setSelectedServiceIndex(index);
+                        handleServiceClick(index);
                       }
                     }}
                     role={enabled ? 'button' : undefined}
@@ -235,7 +249,15 @@ export default function Services({ thankYouPath = '/thank-you' }) {
             </div>
           </div>
 
-          <form ref={formRef} className="booking-form" onSubmit={handleSubmit}>
+          {/* Booking Form - Ref callback allows both emailjs and scrolling functionality */}
+          <form 
+            ref={(el) => {
+              formRef.current = el; // Preserve for emailjs.sendForm()
+              bookingFormSectionRef.current = el; // Add scroll target
+            }}
+            className="booking-form" 
+            onSubmit={handleSubmit}
+          >
             <input type="hidden" name="to_email" value={BUSINESS_EMAIL} />
             <input
               type="hidden"
