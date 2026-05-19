@@ -10,48 +10,50 @@ emailjs.init(EMAILJS_USER);
 
 const SERVICE_OPTIONS = [
   {
-    icon: 'RES',
+    icon: 'FREE ESTIMATE',
     title: 'Residential',
     description: 'Professional window cleaning for homes, including interior and exterior surfaces.',
-    price: 49,
+    price: null,
     available: true,
   },
   {
     icon: 'COM',
     title: 'Commercial',
     description: 'High-rise and building window cleaning services with safety certifications.',
-    price: 149,
+    price: null,
     available: false,
   },
   {
     icon: 'NEW',
     title: 'Post-Construction',
     description: 'Specialized cleaning services to remove debris and residue from new construction.',
-    price: 199,
+    price: null,
     available: false,
   },
   {
     icon: 'PWR',
     title: 'Pressure Washing',
     description: 'Pressure washing services for siding, decks, and other exterior surfaces.',
-    price: 89,
+    price: null,
     available: false,
   },
   {
     icon: 'FIX',
     title: 'Screen Repair',
     description: 'Window screen repair and replacement services to keep bugs out.',
-    price: 39,
+    price: null,
     available: false,
   },
   {
     icon: 'PLAN',
     title: 'Maintenance Plans',
     description: 'Recurring service plans to keep your windows pristine year-round.',
-    price: 69,
+    price: null,
     available: false,
   },
 ];
+
+const hasPrice = (service) => typeof service.price === 'number';
 
 const WEEKDAY_TIMES = [
   { label: '08:00 AM', minutes: 8 * 60 },
@@ -236,11 +238,11 @@ export default function Services({ thankYouPath = '/thank-you' }) {
                     aria-disabled={!enabled}
                   >
                     <span className="service-tag">{service.icon}</span>
-                    {enabled ? (
+                    {enabled && hasPrice(service) ? (
                       <span className="service-price">${service.price}</span>
-                    ) : (
+                    ) : !enabled ? (
                       <span className="service-status">Currently Unavailable</span>
-                    )}
+                    ) : null}
                     <h4>{service.title}</h4>
                     <p>{service.description}</p>
                   </article>
@@ -267,12 +269,13 @@ export default function Services({ thankYouPath = '/thank-you' }) {
             <input
               type="hidden"
               name="selected_service_price"
-              value={selectedService ? String(selectedService.price) : ''}
+              value={selectedService && hasPrice(selectedService) ? String(selectedService.price) : ''}
             />
 
             {selectedService ? (
               <p className="booking-summary">
-                Selected Service: <strong>{selectedService.title}</strong> (${selectedService.price})
+                Selected Service: <strong>{selectedService.title}</strong>
+                {hasPrice(selectedService) ? ` ($${selectedService.price})` : ''}
               </p>
             ) : null}
 

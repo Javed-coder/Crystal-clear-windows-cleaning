@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import logo from '../../assets/images/Logo_edited.png';
+import logo from '../../assets/images/Logo.jpeg';
 
 const LINKS = [
   { label: 'Home', href: '#home' },
@@ -111,7 +111,7 @@ export default function Navigation({ isHomePage = true }) {
                 href={resolveHref('#services')}
                 onClick={(event) => goToSection(event, '#services')}
               >
-                Book Now
+                Book free quote Now
               </a>
             </li>
           </ul>
