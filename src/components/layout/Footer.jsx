@@ -19,6 +19,7 @@ export default function Footer({ isHomePage = true }) {
               <li><a href={resolveHref('#home')}>Home</a></li>
               <li><a href={resolveHref('#about')}>About</a></li>
               <li><a href={resolveHref('#services')}>Book Service</a></li>
+              <li><a href={resolveHref('#work-proof')}>Our Work</a></li>
               <li><a href={resolveHref('#testimonials')}>Reviews</a></li>
             </ul>
           </div>

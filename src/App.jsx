@@ -5,6 +5,7 @@ import Hero from './components/sections/Hero';
 import About from './components/sections/About';
 import Services from './components/sections/Services';
 import Testimonials from './components/sections/Testimonials';
+import WorkProof from './components/sections/WorkProof';
 import ThankYou from './components/sections/ThankYou';
 import Footer from './components/layout/Footer';
 
@@ -28,6 +29,7 @@ export default function App() {
         ) : (
           <>
             <Hero />
+            <WorkProof />
             <Services thankYouPath={THANK_YOU_PATH} />
             <Testimonials />
             <About />
