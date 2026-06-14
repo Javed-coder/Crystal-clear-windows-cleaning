@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
 
 const EMAILJS_USER = import.meta.env.VITE_EMAILJS_USER || 'eLBVjSrb7R2hEBdvB';
@@ -10,7 +10,7 @@ emailjs.init(EMAILJS_USER);
 
 const SERVICE_OPTIONS = [
   {
-    icon: 'FREE ESTIMATE',
+    icon: 'FREE',
     title: 'Residential',
     description: 'Professional window cleaning for homes, including interior and exterior surfaces.',
     price: null,
@@ -24,7 +24,7 @@ const SERVICE_OPTIONS = [
     available: false,
   },
   {
-    icon: 'NEW',
+    icon: 'CON',
     title: 'Post-Construction',
     description: 'Specialized cleaning services to remove debris and residue from new construction.',
     price: null,
@@ -38,14 +38,14 @@ const SERVICE_OPTIONS = [
     available: false,
   },
   {
-    icon: 'FIX',
+    icon: 'SCR',
     title: 'Screen Repair',
     description: 'Window screen repair and replacement services to keep bugs out.',
     price: null,
     available: false,
   },
   {
-    icon: 'PLAN',
+    icon: 'SUB',
     title: 'Maintenance Plans',
     description: 'Recurring service plans to keep your windows pristine year-round.',
     price: null,
@@ -98,10 +98,10 @@ export default function Services({ thankYouPath = '/thank-you' }) {
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(null);
   const [selectedImageCount, setSelectedImageCount] = useState(0);
   const [sending, setSending] = useState(false);
+  const [formError, setFormError] = useState('');
 
-  const formRef = useRef(null); // Used for emailjs form submission
+  const formRef = useRef(null);
   const mediaInputRef = useRef(null);
-  const bookingFormSectionRef = useRef(null); // Used to scroll to form when service selected
 
   const today = useMemo(() => getLocalDateInputValue(new Date()), []);
 
@@ -112,9 +112,7 @@ export default function Services({ thankYouPath = '/thank-you' }) {
     const isWeekend = chosenDate.getDay() === 0 || chosenDate.getDay() === 6;
     const baseSlots = isWeekend ? WEEKEND_TIMES : WEEKDAY_TIMES;
 
-    if (formValues.booking_date !== today) {
-      return baseSlots;
-    }
+    if (formValues.booking_date !== today) return baseSlots;
 
     const now = new Date();
     const nowMinutes = now.getHours() * 60 + now.getMinutes();
@@ -136,39 +134,35 @@ export default function Services({ thankYouPath = '/thank-you' }) {
     setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle service card click: select service and scroll to booking form
   const handleServiceClick = (index) => {
     const service = SERVICE_OPTIONS[index];
-    if (service.available) {
-      // Update selected service
-      setSelectedServiceIndex(index);
-      // Scroll to booking form with smooth animation
-      setTimeout(() => {
-        if (bookingFormSectionRef.current) {
-          bookingFormSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 0);
-    }
+    if (!service.available) return;
+    setSelectedServiceIndex(index);
+    setFormError('');
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!selectedService || !selectedService.available) {
-      alert('Please select an available service before submitting.');
+      setFormError('Please select an available service before submitting.');
       return;
     }
 
     if (!formValues.booking_date || !formValues.booking_time) {
-      alert('Please choose your booking date and available time.');
+      setFormError('Please choose your booking date and available time.');
       return;
     }
 
     if (!formRef.current) {
-      alert('The booking form is unavailable right now. Please refresh and try again.');
+      setFormError('The booking form is unavailable right now. Please refresh and try again.');
       return;
     }
 
+    setFormError('');
     setSending(true);
 
     try {
@@ -184,13 +178,11 @@ export default function Services({ thankYouPath = '/thank-you' }) {
       });
       setSelectedServiceIndex(null);
       setSelectedImageCount(0);
-      if (mediaInputRef.current) {
-        mediaInputRef.current.value = '';
-      }
+      if (mediaInputRef.current) mediaInputRef.current.value = '';
       window.location.assign(thankYouPath);
     } catch (error) {
       console.error('Email send failed:', error);
-      alert('Unable to send right now. Please try again.');
+      setFormError('Unable to send right now. Please try again or call us directly.');
     } finally {
       setSending(false);
     }
@@ -203,9 +195,11 @@ export default function Services({ thankYouPath = '/thank-you' }) {
         <p className="section-subtitle">
           Select your service, choose an available time, and submit your request in one step.
         </p>
-        <div style={{ backgroundColor: '#f0f9ff', border: '2px solid #3b82f6', borderRadius: '8px', padding: '16px', marginBottom: '32px', textAlign: 'center' }}>
-          <p style={{ margin: '8px 0', fontSize: '15px' }}>
-            <strong>Prefer talking to us directly?</strong> Call <a href="tel:613-600-4850" style={{ color: '#2563eb', fontWeight: 'bold', textDecoration: 'underline' }}>(613) 600-4850</a> for instant on-call booking and personalized service recommendations!
+
+        <div className="call-info-box">
+          <p>
+            <strong>Prefer talking to us directly?</strong>{' '}
+            Call <a href="tel:613-600-4850">(613) 600-4850</a> for instant on-call booking and personalized service recommendations!
           </p>
         </div>
 
@@ -241,7 +235,7 @@ export default function Services({ thankYouPath = '/thank-you' }) {
                     {enabled && hasPrice(service) ? (
                       <span className="service-price">${service.price}</span>
                     ) : !enabled ? (
-                      <span className="service-status">Currently Unavailable</span>
+                      <span className="service-status">Coming Soon</span>
                     ) : null}
                     <h4>{service.title}</h4>
                     <p>{service.description}</p>
@@ -251,13 +245,9 @@ export default function Services({ thankYouPath = '/thank-you' }) {
             </div>
           </div>
 
-          {/* Booking Form - Ref callback allows both emailjs and scrolling functionality */}
-          <form 
-            ref={(el) => {
-              formRef.current = el; // Preserve for emailjs.sendForm()
-              bookingFormSectionRef.current = el; // Add scroll target
-            }}
-            className="booking-form" 
+          <form
+            ref={formRef}
+            className="booking-form"
             onSubmit={handleSubmit}
           >
             <input type="hidden" name="to_email" value={BUSINESS_EMAIL} />
@@ -272,108 +262,128 @@ export default function Services({ thankYouPath = '/thank-you' }) {
               value={selectedService && hasPrice(selectedService) ? String(selectedService.price) : ''}
             />
 
-            {selectedService ? (
+            {selectedService && (
               <p className="booking-summary">
-                Selected Service: <strong>{selectedService.title}</strong>
-                {hasPrice(selectedService) ? ` ($${selectedService.price})` : ''}
+                Selected: <strong>{selectedService.title}</strong>
+                {hasPrice(selectedService) ? ` — $${selectedService.price}` : ' — Free Estimate'}
               </p>
-            ) : null}
+            )}
 
-            <label htmlFor="from_name">Full Name</label>
-            <input
-              id="from_name"
-              type="text"
-              name="from_name"
-              value={formValues.from_name}
-              onChange={handleInputChange}
-              placeholder="Enter your full name"
-              required
-            />
+            {formError && (
+              <p className="booking-form__error" role="alert">{formError}</p>
+            )}
 
-            <label htmlFor="from_email">Email Address</label>
-            <input
-              id="from_email"
-              type="email"
-              name="from_email"
-              value={formValues.from_email}
-              onChange={handleInputChange}
-              placeholder="Enter your email"
-              required
-            />
+            <div className="form-row">
+              <div className="form-field">
+                <label htmlFor="from_name">Full Name</label>
+                <input
+                  id="from_name"
+                  type="text"
+                  name="from_name"
+                  value={formValues.from_name}
+                  onChange={handleInputChange}
+                  placeholder="Your full name"
+                  required
+                />
+              </div>
+              <div className="form-field">
+                <label htmlFor="from_email">Email Address</label>
+                <input
+                  id="from_email"
+                  type="email"
+                  name="from_email"
+                  value={formValues.from_email}
+                  onChange={handleInputChange}
+                  placeholder="Your email"
+                  required
+                />
+              </div>
+            </div>
 
-            <label htmlFor="phone">Phone Number</label>
-            <input
-              id="phone"
-              type="tel"
-              name="phone"
-              value={formValues.phone}
-              onChange={handleInputChange}
-              placeholder="Enter your phone number"
-              pattern="[0-9+()\\-\\s]{7,20}"
-              required
-            />
+            <div className="form-row">
+              <div className="form-field">
+                <label htmlFor="phone">Phone Number</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  name="phone"
+                  value={formValues.phone}
+                  onChange={handleInputChange}
+                  placeholder="Your phone number"
+                  pattern="[0-9+()\\-\\s]{7,20}"
+                  required
+                />
+              </div>
+              <div className="form-field">
+                <label htmlFor="booking_date">Booking Date</label>
+                <input
+                  id="booking_date"
+                  type="date"
+                  name="booking_date"
+                  min={today}
+                  value={formValues.booking_date}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+            </div>
 
-            <label htmlFor="booking_date">Booking Date</label>
-            <input
-              id="booking_date"
-              type="date"
-              name="booking_date"
-              min={today}
-              value={formValues.booking_date}
-              onChange={handleInputChange}
-              required
-            />
-
-            <label htmlFor="booking_time">Available Time</label>
-            <select
-              id="booking_time"
-              name="booking_time"
-              value={formValues.booking_time}
-              onChange={handleInputChange}
-              disabled={!formValues.booking_date || availableTimes.length === 0}
-              required
-            >
-              <option value="">
-                {!formValues.booking_date
-                  ? 'Select a date first'
-                  : availableTimes.length === 0
-                    ? 'No slots available today'
-                    : 'Select available time'}
-              </option>
-              {availableTimes.map((slot) => (
-                <option key={slot.label} value={slot.label}>
-                  {slot.label}
+            <div className="form-field">
+              <label htmlFor="booking_time">Available Time</label>
+              <select
+                id="booking_time"
+                name="booking_time"
+                value={formValues.booking_time}
+                onChange={handleInputChange}
+                disabled={!formValues.booking_date || availableTimes.length === 0}
+                required
+              >
+                <option value="">
+                  {!formValues.booking_date
+                    ? 'Select a date first'
+                    : availableTimes.length === 0
+                      ? 'No slots available today'
+                      : 'Select available time'}
                 </option>
-              ))}
-            </select>
+                {availableTimes.map((slot) => (
+                  <option key={slot.label} value={slot.label}>
+                    {slot.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            <label htmlFor="message">Project Details (optional)</label>
-            <textarea
-              id="message"
-              name="message"
-              value={formValues.message}
-              onChange={handleInputChange}
-              placeholder="Tell us about your property and any access details."
-            />
+            <div className="form-field">
+              <label htmlFor="message">Project Details (optional)</label>
+              <textarea
+                id="message"
+                name="message"
+                value={formValues.message}
+                onChange={handleInputChange}
+                placeholder="Tell us about your property and any access details."
+              />
+            </div>
 
-            <label htmlFor="media">Attach House Images (optional)</label>
-            <input
-              ref={mediaInputRef}
-              id="media"
-              type="file"
-              name="media"
-              accept="image/*"
-              multiple
-              onChange={(event) => setSelectedImageCount((event.target.files || []).length)}
-            />
-            <p className="file-count">
-              {selectedImageCount > 0
-                ? `${selectedImageCount} image(s) selected`
-                : 'No images selected yet'}
-            </p>
+            <div className="form-field">
+              <label htmlFor="media">Attach House Images (optional)</label>
+              <input
+                ref={mediaInputRef}
+                id="media"
+                type="file"
+                name="media"
+                accept="image/*"
+                multiple
+                onChange={(event) => setSelectedImageCount((event.target.files || []).length)}
+              />
+              <p className="file-count">
+                {selectedImageCount > 0
+                  ? `${selectedImageCount} image${selectedImageCount > 1 ? 's' : ''} selected`
+                  : 'No images selected yet'}
+              </p>
+            </div>
 
             <button className="btn" type="submit" disabled={sending}>
-              {sending ? 'Submitting...' : 'Submit Booking Request'}
+              {sending ? 'Submitting…' : 'Submit Booking Request'}
             </button>
           </form>
         </div>

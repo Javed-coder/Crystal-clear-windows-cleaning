@@ -9,7 +9,7 @@ export default function Footer({ isHomePage = true }) {
           <div>
             <h3>Crystal Clear Windows</h3>
             <p>
-              Professional residential and commercial window cleaning with reliable scheduling.
+              Professional residential and commercial window cleaning with reliable scheduling across Ottawa, ON.
             </p>
           </div>
 
@@ -28,9 +28,9 @@ export default function Footer({ isHomePage = true }) {
             <h4>Contact</h4>
             <ul>
               <li><strong><a href="tel:613-600-4850">(613) 600-4850</a></strong></li>
-              <li style={{ fontSize: '14px', fontStyle: 'italic' }}>Call for instant on-call booking</li>
+              <li className="footer__contact-note">Call for instant on-call booking</li>
               <li><a href="mailto:crystalclearwindows077@gmail.com">crystalclearwindows077@gmail.com</a></li>
-              <li>Mon-Sat: 8:00 AM - 6:00 PM</li>
+              <li>Mon–Sat: 8:00 AM – 6:00 PM</li>
             </ul>
           </div>
         </div>

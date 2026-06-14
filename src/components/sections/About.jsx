@@ -1,4 +1,4 @@
-﻿import cleanerImage from '../../assets/images/about-cleaner-blue.jpg';
+import cleanerImage from '../../assets/images/about-cleaner-blue.jpg';
 
 const FEATURES = [
   'Licensed and insured technicians',
@@ -6,6 +6,24 @@ const FEATURES = [
   'On-time appointments with clear communication',
   'Safe products for families, pets, and landscaping',
 ];
+
+function CheckIcon() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width="15"
+      height="15"
+      aria-hidden="true"
+    >
+      <polyline points="4 10 8 14 16 6" />
+    </svg>
+  );
+}
 
 export default function About() {
   return (
@@ -23,7 +41,9 @@ export default function About() {
             <div className="about__features">
               {FEATURES.map((item) => (
                 <div className="about__feature" key={item}>
-                  <span className="about__feature-tag" aria-hidden="true">OK</span>
+                  <span className="about__feature-tag" aria-hidden="true">
+                    <CheckIcon />
+                  </span>
                   <span>{item}</span>
                 </div>
               ))}
