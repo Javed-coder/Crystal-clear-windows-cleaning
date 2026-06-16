@@ -1,4 +1,4 @@
-import cleanerImage from '../../assets/images/about-cleaner-blue.jpg';
+import cleanerImage from '../../assets/images/Window-cleaner.png';
 
 const FEATURES = [
   'Licensed and insured technicians',
