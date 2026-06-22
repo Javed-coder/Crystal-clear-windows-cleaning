@@ -168,6 +168,25 @@ export default function Services({ thankYouPath = '/thank-you' }) {
     try {
       await emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formRef.current);
 
+      // Send booking to CRM (fire-and-forget — never blocks the customer)
+      const crmUrl = import.meta.env.VITE_CRM_WEBHOOK_URL;
+      const crmSecret = import.meta.env.VITE_CRM_WEBHOOK_SECRET;
+      if (crmUrl && crmSecret) {
+        fetch(crmUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Webhook-Secret': crmSecret },
+          body: JSON.stringify({
+            name: formValues.from_name,
+            email: formValues.from_email,
+            phone: formValues.phone,
+            date: formValues.booking_date,
+            time: formValues.booking_time,
+            service: selectedService?.title ?? 'Residential',
+            notes: formValues.message,
+          }),
+        }).catch(() => undefined);
+      }
+
       setFormValues({
         from_name: '',
         from_email: '',
@@ -187,6 +206,7 @@ export default function Services({ thankYouPath = '/thank-you' }) {
       setSending(false);
     }
   };
+
 
   return (
     <section className="services-section" id="services">
