@@ -91,6 +91,7 @@ export default function Services({ thankYouPath = '/thank-you' }) {
     from_name: '',
     from_email: '',
     phone: '',
+    address: '',
     booking_date: '',
     booking_time: '',
     message: '',
@@ -152,6 +153,11 @@ export default function Services({ thankYouPath = '/thank-you' }) {
       return;
     }
 
+    if (!formValues.address.trim()) {
+      setFormError('Please enter the service address.');
+      return;
+    }
+
     if (!formValues.booking_date || !formValues.booking_time) {
       setFormError('Please choose your booking date and available time.');
       return;
@@ -176,6 +182,7 @@ export default function Services({ thankYouPath = '/thank-you' }) {
           name: formValues.from_name,
           email: formValues.from_email,
           phone: formValues.phone,
+          address: formValues.address,
           date: formValues.booking_date,
           time: formValues.booking_time,
           service: selectedService?.title ?? 'Residential',
@@ -191,6 +198,7 @@ export default function Services({ thankYouPath = '/thank-you' }) {
         from_name: '',
         from_email: '',
         phone: '',
+        address: '',
         booking_date: '',
         booking_time: '',
         message: '',
@@ -346,6 +354,19 @@ export default function Services({ thankYouPath = '/thank-you' }) {
                   required
                 />
               </div>
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="address">Service Address</label>
+              <input
+                id="address"
+                type="text"
+                name="address"
+                value={formValues.address}
+                onChange={handleInputChange}
+                placeholder="Street address, city, postal code"
+                required
+              />
             </div>
 
             <div className="form-field">
