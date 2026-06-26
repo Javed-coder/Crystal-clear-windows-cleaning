@@ -91,7 +91,10 @@ export default function Services({ thankYouPath = '/thank-you' }) {
     from_name: '',
     from_email: '',
     phone: '',
-    address: '',
+    address_line1: '',
+    address_line2: '',
+    address_city: 'Ottawa',
+    address_postal: '',
     booking_date: '',
     booking_time: '',
     message: '',
@@ -100,6 +103,12 @@ export default function Services({ thankYouPath = '/thank-you' }) {
   const [selectedImageCount, setSelectedImageCount] = useState(0);
   const [sending, setSending] = useState(false);
   const [formError, setFormError] = useState('');
+
+  // Address autocomplete (OpenStreetMap / Photon — free, no API key)
+  const [addressQuery, setAddressQuery] = useState('');
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const justSelectedRef = useRef(false);
 
   const formRef = useRef(null);
   const mediaInputRef = useRef(null);
@@ -127,6 +136,57 @@ export default function Services({ thankYouPath = '/thank-you' }) {
     }
   }, [availableTimes, formValues.booking_time]);
 
+  // Debounced address lookup against Photon (biased toward Ottawa)
+  useEffect(() => {
+    if (justSelectedRef.current) {
+      justSelectedRef.current = false;
+      return;
+    }
+    const query = addressQuery.trim();
+    if (query.length < 3) {
+      setAddressSuggestions([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      try {
+        const url =
+          'https://photon.komoot.io/api/?q=' +
+          encodeURIComponent(query) +
+          '&limit=5&lang=en&lat=45.4215&lon=-75.6972';
+        const res = await fetch(url, { signal: controller.signal });
+        const data = await res.json();
+        setAddressSuggestions(Array.isArray(data.features) ? data.features : []);
+        setShowSuggestions(true);
+      } catch {
+        // network/abort — ignore, user can still type manually
+      }
+    }, 350);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [addressQuery]);
+
+  const handleAddressSelect = (feature) => {
+    const p = feature.properties || {};
+    const line1 = [p.housenumber, p.street || p.name].filter(Boolean).join(' ');
+    const line2 = [p.suburb, p.district].filter(Boolean).join(', ');
+    justSelectedRef.current = true;
+    setFormValues((prev) => ({
+      ...prev,
+      address_line1: line1 || p.name || '',
+      address_line2: line2,
+      address_city: p.city || p.town || p.village || prev.address_city,
+      address_postal: p.postcode || '',
+    }));
+    setAddressQuery(line1 || p.name || '');
+    setAddressSuggestions([]);
+    setShowSuggestions(false);
+  };
+
   const selectedService =
     selectedServiceIndex !== null ? SERVICE_OPTIONS[selectedServiceIndex] : null;
 
@@ -153,8 +213,8 @@ export default function Services({ thankYouPath = '/thank-you' }) {
       return;
     }
 
-    if (!formValues.address.trim()) {
-      setFormError('Please enter the service address.');
+    if (!formValues.address_line1.trim() || !formValues.address_city.trim()) {
+      setFormError('Please enter the service address (street and city).');
       return;
     }
 
@@ -171,6 +231,17 @@ export default function Services({ thankYouPath = '/thank-you' }) {
     setFormError('');
     setSending(true);
 
+    // Combine the structured address fields into one line for the CRM + email
+    const fullAddress = [
+      formValues.address_line1,
+      formValues.address_line2,
+      formValues.address_city,
+      formValues.address_postal,
+    ]
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .join(', ');
+
     // Fire CRM webhook immediately — independent of EmailJS so it always runs
     const crmUrl = import.meta.env.VITE_CRM_WEBHOOK_URL;
     const crmSecret = import.meta.env.VITE_CRM_WEBHOOK_SECRET;
@@ -182,7 +253,7 @@ export default function Services({ thankYouPath = '/thank-you' }) {
           name: formValues.from_name,
           email: formValues.from_email,
           phone: formValues.phone,
-          address: formValues.address,
+          address: fullAddress,
           date: formValues.booking_date,
           time: formValues.booking_time,
           service: selectedService?.title ?? 'Residential',
@@ -198,11 +269,16 @@ export default function Services({ thankYouPath = '/thank-you' }) {
         from_name: '',
         from_email: '',
         phone: '',
-        address: '',
+        address_line1: '',
+        address_line2: '',
+        address_city: 'Ottawa',
+        address_postal: '',
         booking_date: '',
         booking_time: '',
         message: '',
       });
+      setAddressQuery('');
+      setAddressSuggestions([]);
       setSelectedServiceIndex(null);
       setSelectedImageCount(0);
       if (mediaInputRef.current) mediaInputRef.current.value = '';
@@ -356,17 +432,95 @@ export default function Services({ thankYouPath = '/thank-you' }) {
               </div>
             </div>
 
-            <div className="form-field">
-              <label htmlFor="address">Service Address</label>
+            <div className="form-field address-autocomplete">
+              <label htmlFor="address_search">Search Your Address</label>
               <input
-                id="address"
+                id="address_search"
                 type="text"
-                name="address"
-                value={formValues.address}
-                onChange={handleInputChange}
-                placeholder="Street address, city, postal code"
-                required
+                autoComplete="off"
+                value={addressQuery}
+                onChange={(e) => {
+                  setAddressQuery(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => addressSuggestions.length > 0 && setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                placeholder="Start typing, e.g. 25 Woodridge"
               />
+              {showSuggestions && addressSuggestions.length > 0 && (
+                <ul className="address-suggestions">
+                  {addressSuggestions.map((feature, i) => {
+                    const p = feature.properties || {};
+                    const label = [
+                      [p.housenumber, p.street || p.name].filter(Boolean).join(' '),
+                      p.city || p.town || p.village,
+                      p.postcode,
+                    ]
+                      .filter(Boolean)
+                      .join(', ');
+                    return (
+                      <li
+                        key={i}
+                        onMouseDown={() => handleAddressSelect(feature)}
+                      >
+                        {label}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+
+            <div className="form-row">
+              <div className="form-field">
+                <label htmlFor="address_line1">Address Line 1</label>
+                <input
+                  id="address_line1"
+                  type="text"
+                  name="address_line1"
+                  value={formValues.address_line1}
+                  onChange={handleInputChange}
+                  placeholder="Street number and name"
+                  required
+                />
+              </div>
+              <div className="form-field">
+                <label htmlFor="address_line2">Address Line 2 (optional)</label>
+                <input
+                  id="address_line2"
+                  type="text"
+                  name="address_line2"
+                  value={formValues.address_line2}
+                  onChange={handleInputChange}
+                  placeholder="Unit, suite, buzzer"
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-field">
+                <label htmlFor="address_city">City</label>
+                <input
+                  id="address_city"
+                  type="text"
+                  name="address_city"
+                  value={formValues.address_city}
+                  onChange={handleInputChange}
+                  placeholder="City"
+                  required
+                />
+              </div>
+              <div className="form-field">
+                <label htmlFor="address_postal">Postal Code</label>
+                <input
+                  id="address_postal"
+                  type="text"
+                  name="address_postal"
+                  value={formValues.address_postal}
+                  onChange={handleInputChange}
+                  placeholder="K1A 0A6"
+                />
+              </div>
             </div>
 
             <div className="form-field">
