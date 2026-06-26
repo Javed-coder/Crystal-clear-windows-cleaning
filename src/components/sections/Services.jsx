@@ -445,7 +445,6 @@ export default function Services({ thankYouPath = '/thank-you' }) {
                 }}
                 onFocus={() => addressSuggestions.length > 0 && setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                placeholder="Start typing, e.g. 25 Woodridge"
               />
               {showSuggestions && addressSuggestions.length > 0 && (
                 <ul className="address-suggestions">
